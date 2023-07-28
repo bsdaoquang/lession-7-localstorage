@@ -33,7 +33,6 @@ const handleAddNewTask = async () =>
     createdBy: 'my'
   }
 
-
   tasks.push(task)
   handlePrintTask(task, tasks.length - 1)
 
@@ -41,6 +40,7 @@ const handleAddNewTask = async () =>
 
   await handleSaveToLocalStorage(tasks, 'tasks').then(() => console.log('Saved'))
 }
+
 
 const handleSaveToLocalStorage = async (val, name) =>
 {
@@ -59,7 +59,7 @@ const handleRemoveTask = (id) =>
   handleSaveToLocalStorage(tasks, 'tasks')
 }
 
-const handlePrintTask = (item, index) =>
+const handlePrintTask = (item, index, replace) =>
 {
 
   const container = document.createElement('li')
@@ -71,6 +71,8 @@ const handlePrintTask = (item, index) =>
 
   const checkbox = document.createElement('input')
   checkbox.setAttribute('type', 'checkbox')
+  checkbox.setAttribute('id', `cb-task-${index}`)
+  checkbox.setAttribute('onchange', `handleChangeCompletedStatus(${index})`)
 
   const btn = document.createElement('button')
   btn.setAttribute('class', 'btn btn-sm btn-danger')
@@ -79,7 +81,8 @@ const handlePrintTask = (item, index) =>
   btn.setAttribute('onclick', `handleRemoveTask(${index})`)
 
   const p = document.createElement('p')
-  p.setAttribute('class', 'col list-item')
+  p.setAttribute('class', `col list-item ${item.isCompleted ? 'text-muted' : '#676767'}`)
+  p.setAttribute('id', `content-${index}`)
   p.innerHTML = item.content
 
 
@@ -89,9 +92,35 @@ const handlePrintTask = (item, index) =>
   div.appendChild(btn)
 
   container.appendChild(div)
-  document.getElementById('tasks-container').appendChild(container)
+
+  if (replace) {
+    document.getElementById(replace).replaceChild(container, container)
+  } else {
+
+    document.getElementById('tasks-container').appendChild(container)
+  }
+
 
 }
 
+const handleChangeCompletedStatus = (id) =>
+{
+  const isChecked = document.getElementById(`cb-task-${id}`).checked
+
+  const item = {
+    ...tasks[id],
+    isCompleted: isChecked
+  }
+
+
+
+  handlePrintTask(item, id, `cb-task-${id}`)
+
+
+
+  // if (isChecked) {
+  //   container.replaceChild(content, `<p>fakfhskj</p>`)
+  // }
+}
 
 
