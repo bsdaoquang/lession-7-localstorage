@@ -16,6 +16,10 @@
 			integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
 			crossorigin="anonymous"
 		></script>
+		<link
+			rel="stylesheet"
+			href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
+		/>
 		<style>
 			p {
 				margin: 0px;
@@ -32,13 +36,6 @@
 	<body>
 		<div class="container">
 			<div class="card mt-4">
-				<div class="card-body">
-					<h1 id="time"></h1>
-				</div>
-			</div>
-
-			<div class="card mt-4">
-				<h2>Todo list</h2>
 				<div class="card-body">
 					<div class="input-group mb-3 input-group-lg">
 						<input
@@ -61,12 +58,8 @@
 						</div>
 					</div>
 
-					<div class="mt-3" id="tasks-container"></div>
+					<ul class="list-group" id="tasks-container"></ul>
 				</div>
-
-				<button class="btn btn-sm btn-success" onclick="handleShowTasks()">
-					Show
-				</button>
 			</div>
 		</div>
 

@@ -1,75 +1,27 @@
 /** @format */
 
+
 const tasks = []
 
-function add0toNumber(num)
+const handleGetAllTasksFromLocal = async () =>
 {
-  let numStr = ''
+  const res = await localStorage.getItem('tasks')
 
-  if (num >= 10) {
-    numStr = `${num}`
-  } else {
-    numStr = `0${num}`
+  if (res) {
+    const items = JSON.parse(res)
+    items.forEach((item, index) =>
+    {
+      handlePrintTask(item, index)
+      tasks.push(item)
+    })
+
+    // tasks.forEach(item => handlePrintTask(item))
   }
-
-  return numStr
 }
 
-function getAndPrintTime()
-{
-  const date = new Date();
+handleGetAllTasksFromLocal()
 
-  const time = `${add0toNumber(date.getHours())}:${add0toNumber(
-    date.getMinutes()
-  )}:${add0toNumber(date.getSeconds())}`;
-
-  document.getElementById('time').innerHTML = time;
-}
-
-getAndPrintTime();
-
-// setInterval(() =>
-// {
-//   getAndPrintTime()
-// }, 1000)
-
-
-function handlePrintTask(item, index)
-{
-  const container = document.createElement('div')
-
-  const div = document.createElement('div')
-  div.setAttribute('class', 'row mt-2 mb-2 list')
-
-  const checkbox = document.createElement('input')
-  checkbox.setAttribute('type', 'checkbox')
-
-  const btn = document.createElement('button')
-  btn.setAttribute('class', 'btn btn-sm btn-danger')
-
-  btn.innerHTML = 'Del'
-  btn.setAttribute('onclick', `handleRemoveTask(${index})`)
-
-  const p = document.createElement('p')
-  p.setAttribute('class', 'col list-item')
-  p.innerHTML = item.content
-
-  const createdAt = document.createElement('p')
-  createdAt.innerHTML = new Date(item.createdAt).toISOString()
-
-
-  div.appendChild(checkbox)
-  div.appendChild(p)
-  div.appendChild(btn)
-
-  container.appendChild(div)
-  container.appendChild(createdAt)
-
-  document.getElementById('tasks-container').appendChild(container)
-
-}
-
-function handleAddNewTask()
+const handleAddNewTask = async () =>
 {
   const newTask = document.getElementById('inp-task').value
 
@@ -81,23 +33,65 @@ function handleAddNewTask()
     createdBy: 'my'
   }
 
+
   tasks.push(task)
+  handlePrintTask(task, tasks.length - 1)
+
   document.getElementById('inp-task').value = ''
+
+  await handleSaveToLocalStorage(tasks, 'tasks').then(() => console.log('Saved'))
 }
 
-
-function handleShowTasks()
+const handleSaveToLocalStorage = async (val, name) =>
 {
-  tasks.forEach((item, index) => handlePrintTask(item, index))
+  await localStorage.setItem(name, JSON.stringify(val))
 }
 
-/*
-  1. Lưu danh sách nhiệm vụ vào localstorage
-  2. Mỗi lần thêm nhiệm vụ mới, kiểm tra xem có danh sách trong local chưa,
-  nếu có thì thêm vào và lưu lại, nếu chưa có thì tạo mới và lưu lại
-  3. hiển thị danh sách nhiệm vụ từ local
-  4. khi người dùng bấm vào checkbox thì chuyển nội dung nhiệm vụ thành màu xám, gạch ngang nội dung
-  5. Xoá nhiệm vụ
-    Chỉ nhiệm vụ đã hoàn thành mới được xoá
-    nếu chưa hoàn thành, hiển thị thông báo cho người dùng
-*/ 
+
+const handleRemoveTask = (id) =>
+{
+  const container = document.getElementById('tasks-container')
+  const element = document.getElementById(`task${id}`)
+  container.removeChild(element)
+
+  tasks.splice(id, 1)
+
+  handleSaveToLocalStorage(tasks, 'tasks')
+}
+
+const handlePrintTask = (item, index) =>
+{
+
+  const container = document.createElement('li')
+  container.setAttribute('class', 'list-group-item')
+  container.setAttribute('id', `task${index}`)
+
+  const div = document.createElement('div')
+  div.setAttribute('class', 'row mt-2 mb-2 list')
+
+  const checkbox = document.createElement('input')
+  checkbox.setAttribute('type', 'checkbox')
+
+  const btn = document.createElement('button')
+  btn.setAttribute('class', 'btn btn-sm btn-danger')
+
+  btn.innerHTML = '<i class="fas fa-trash text-light"></i>'
+  btn.setAttribute('onclick', `handleRemoveTask(${index})`)
+
+  const p = document.createElement('p')
+  p.setAttribute('class', 'col list-item')
+  p.innerHTML = item.content
+
+
+
+  div.appendChild(checkbox)
+  div.appendChild(p)
+  div.appendChild(btn)
+
+  container.appendChild(div)
+  document.getElementById('tasks-container').appendChild(container)
+
+}
+
+
+
